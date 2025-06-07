@@ -1,5 +1,6 @@
 #include "../include/CLI11.hpp"
 #include <ctime>
+#include <fstream>
 #include <iostream>
 
 void print_help() {
@@ -37,9 +38,7 @@ OUTPUT
 
 CONTACT
   Created by zamyn17 — GitHub: https://github.com/zmn17/zlog
-
---------------------------------------------
-               )";
+)";
 }
 
 int main(int argc, char *argv[]) {
@@ -49,6 +48,10 @@ int main(int argc, char *argv[]) {
 
     bool show_help = false;
 
+    std::string title, paragraph, filename;
+    app.add_option("-t, --title", title, "Title for the log entry");
+    app.add_option("-p, --paragraph", paragraph, "Note to log");
+    app.add_option("-f, --file", filename, "Target markdown file");
     app.add_flag("-h, --help", show_help, "Show help screen");
 
     CLI11_PARSE(app, argc, argv);
@@ -57,6 +60,17 @@ int main(int argc, char *argv[]) {
         print_help();
         return 0;
     }
+    std::cout << "filename: " << filename << std::endl;
+
+    std::ofstream file(filename);
+    while (!file.is_open()) {
+        std::cerr << "Failed to open the file to write" << std::endl;
+        return 0;
+    }
+    file << "# " + title << std::endl;
+    file << paragraph << std::endl;
+
+    file.close();
 
     return 0;
 }
